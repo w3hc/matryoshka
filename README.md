@@ -1,11 +1,6 @@
-# Another Star
+# Matryoshka
 
-This repo was forked from [Nexth](https://github.com/wslyvh/nexth).
-
-It's a Web3 app boilerplate built with Next.js, Chakra UI, Ethers, Wagmi and ConnectKit.
-
-- Netlify: [https://another-star.netlify.app/](https://another-star.netlify.app/)
-- IPFS: [https://bafybeiaadcgdrw5pulupdykl4bmxayzx3yfqiipy73nvh5rf3rgtun47um.ipfs.w3s.link](https://bafybeiaadcgdrw5pulupdykl4bmxayzx3yfqiipy73nvh5rf3rgtun47um.ipfs.w3s.link)
+An NFT in an NFT.
 
 ## Install
 
