@@ -49,7 +49,7 @@ export default function Home() {
 
   const mint = async () => {
     console.log('minting...')
-    if(isDisconnected === true){
+    if (isDisconnected === true) {
       toast({
         title: 'Not connected',
         description: 'Please connect your wallet.',
@@ -57,8 +57,7 @@ export default function Home() {
         duration: 9000,
         isClosable: true,
       })
-    }
-    else{
+    } else {
       try {
         setLoading(true)
         const call = await nft.safeMint()
