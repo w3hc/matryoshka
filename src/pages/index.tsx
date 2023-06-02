@@ -1,4 +1,4 @@
-import { Heading, Button } from '@chakra-ui/react'
+import { Heading, Button, useToast } from '@chakra-ui/react'
 import { Head } from '../components/layout/Head'
 // import Image from 'next/image'
 import { LinkComponent } from '../components/layout/LinkComponent'
@@ -31,6 +31,8 @@ export default function Home() {
     volume: 0.5,
   })
 
+  const toast = useToast()
+
   const explorerUrl = network.chain?.blockExplorers?.default.url
 
   const nft = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI, signer)
@@ -47,17 +49,28 @@ export default function Home() {
 
   const mint = async () => {
     console.log('minting...')
-    try {
-      setLoading(true)
-      const call = await nft.safeMint()
-      const nftReceipt = await call.wait(1)
-      console.log('tx:', nftReceipt)
-      setTxLink(explorerUrl + '/tx/' + nftReceipt.transactionHash)
-      setLoading(false)
-      play()
-    } catch (e) {
-      setLoading(false)
-      console.log('error:', e)
+    if(isDisconnected === true){
+      toast({
+        title: 'Not connected',
+        description: 'Please connect your wallet.',
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      })
+    }
+    else{
+      try {
+        setLoading(true)
+        const call = await nft.safeMint()
+        const nftReceipt = await call.wait(1)
+        console.log('tx:', nftReceipt)
+        setTxLink(explorerUrl + '/tx/' + nftReceipt.transactionHash)
+        setLoading(false)
+        play()
+      } catch (e) {
+        setLoading(false)
+        console.log('error:', e)
+      }
     }
   }
 
