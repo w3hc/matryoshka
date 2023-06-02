@@ -1,5 +1,5 @@
 import { ThemingProps } from '@chakra-ui/react'
-import { goerli } from '@wagmi/chains'
+import { Chain } from '@wagmi/chains'
 
 export const SITE_NAME = 'Another Star'
 export const SITE_DESCRIPTION = 'A Web3 app boilerplate built with Next.js, Chakra UI, Ethers, Wagmi and ConnectKit'
@@ -13,7 +13,29 @@ export const THEME_CONFIG = {
 export const SOCIAL_TWITTER = 'W3HC'
 export const SOCIAL_GITHUB = 'w3hc/nexth'
 
-export const ETH_CHAINS = [goerli]
+const mantletestnet: Chain = {
+  id: 5001,
+  name: 'Mantle Testnet',
+  network: 'Mantle Testnet',
+  iconUrl: 'https://i.imgur.com/Q3oIdip.png',
+  iconBackground: '#fff',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'BIT',
+    symbol: 'BIT',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.testnet.mantle.xyz'],
+    },
+  },
+  blockExplorers: {
+    default: { name: 'Mantle Testnet Explorer', url: 'https://explorer.testnet.mantle.xyz' },
+  },
+  testnet: true,
+}
+
+export const ETH_CHAINS = [mantletestnet]
 export const alchemyId = process.env.NEXT_PUBLIC_ARBITRUM_ALCHEMY_ID
 
 export const SERVER_SESSION_SETTINGS = {
