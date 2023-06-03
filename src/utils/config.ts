@@ -17,8 +17,6 @@ const mantletestnet: Chain = {
   id: 5001,
   name: 'Mantle Testnet',
   network: 'Mantle Testnet',
-  iconUrl: 'https://i.imgur.com/Q3oIdip.png',
-  iconBackground: '#fff',
   nativeCurrency: {
     decimals: 18,
     name: 'BIT',
@@ -26,6 +24,9 @@ const mantletestnet: Chain = {
   },
   rpcUrls: {
     default: {
+      http: ['https://rpc.testnet.mantle.xyz'],
+    },
+    public: {
       http: ['https://rpc.testnet.mantle.xyz'],
     },
   },
