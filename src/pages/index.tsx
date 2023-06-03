@@ -9,7 +9,7 @@ import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from '../lib/consts'
 import useSound from 'use-sound' // https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/
 const stevie = 'https://bafybeicxvrehw23nzkwjcxvsytimqj2wos7dhh4evrv5kscbbj6agilcsy.ipfs.w3s.link/another-star.mp3'
 
-export default function Home() {
+export default function Index() {
   const [loading, setLoading] = useState<boolean>(false)
   const [userBal, setUserBal] = useState<string>('')
   const [txLink, setTxLink] = useState<string>('')
@@ -78,10 +78,7 @@ export default function Home() {
       <Head />
 
       <main>
-        <Heading as="h2">Basic Minter</Heading>
-        <br />
-        <p>Welcome to Basic Minter!</p>
-
+        <Heading as="h2">Matryoshka</Heading>
         {isDisconnected ? (
           <>
             <br />
@@ -94,15 +91,20 @@ export default function Home() {
             <p>You&apos;re about to mint 1 NFT on Ethereum Goerli Testnet.</p>
             <br />
             <p>
-              You&apos;re connected to <strong>Ethereum Goerli Testnet</strong> and your wallet currently holds
-              <strong> {userBal}</strong>. You can go ahead and click on the &apos;Mint&apos; button below: you will be invited to sign your
-              transaction.{' '}
+              You&apos;re connected to <strong>Mantle Testnet</strong> and your wallet currently holds
+              <strong> {userBal}</strong>.
             </p>
+            {/* You can go ahead and click on the &apos;Mint&apos; button below: you will be invited to sign your
+              transaction.{' '} */}
           </>
         )}
-
         <br />
-        {!loading ? (
+        <LinkComponent href="./gfca">
+          {/* <Button colorScheme="green" variant="outline"> */}
+          Get some gCFA
+          {/* </Button> */}
+        </LinkComponent>{' '}
+        {/* {!loading ? (
           !txLink ? (
             <Button colorScheme="green" variant="outline" onClick={mint}>
               Mint
@@ -116,17 +118,13 @@ export default function Home() {
           <Button isLoading colorScheme="green" loadingText="Minting" variant="outline">
             Mint
           </Button>
-        )}
-
+        )} */}
         {txLink && (
           <>
             <br />
             <br />
             <p>Done! You can view your transaction on Etherscan:</p>
             <br />
-            <LinkComponent target="blank" href={txLink}>
-              {txLink}
-            </LinkComponent>
           </>
         )}
         <br />
