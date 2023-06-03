@@ -112,8 +112,8 @@ export default function Gcfa() {
       //   return
       // }
 
-      const mint = await eur.mint(ethers.utils.parseEther(eurAmount), { gasLimit: 30000 })
-      //   const mint = await eur.mint(ethers.utils.parseEther(eurAmount))
+      const mint = await eur.mint(ethers.utils.parseEther(eurAmount))
+      // const mint = await eur.mint(ethers.utils.parseEther(eurAmount), { gasLimit: 30000 })
       const mintReceipt = await mint.wait(1)
       console.log('tx:', mintReceipt)
       setMintTxLink(explorerUrl + '/tx/' + mintReceipt.transactionHash)

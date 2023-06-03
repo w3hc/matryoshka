@@ -99,10 +99,10 @@ export default function Index() {
           </>
         )}
         <br />
-        <LinkComponent href="./gfca">
-          {/* <Button colorScheme="green" variant="outline"> */}
-          Get some gCFA
-          {/* </Button> */}
+        <LinkComponent href="gcfa">
+          <Button colorScheme="green" variant="outline">
+            Get some gCFA
+          </Button>
         </LinkComponent>{' '}
         {/* {!loading ? (
           !txLink ? (
