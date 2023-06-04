@@ -71,7 +71,7 @@ export default function Gcfa() {
   const getBalances = async () => {
     const val = Number(bal?.formatted).toFixed(3)
     setUserBal(String(val) + ' ' + bal?.symbol)
-    console.log('xDAI bal:', Number(bal?.formatted).toFixed(4))
+    console.log('BIT bal:', Number(bal?.formatted).toFixed(4))
     const x = await eur.balanceOf(address)
     setEurBal(Number(x / 10 ** 18))
     console.log('eur bal:', Number(x / 10 ** 18))
@@ -95,25 +95,8 @@ export default function Gcfa() {
     try {
       setLoadingMint(true)
       setMintTxLink('')
-
-      // const xdaiBal = Number(bal.formatted)
-      // console.log('xdaiBal', xdaiBal)
-      // if (xdaiBal < 0.000001) {
-      //   toast({
-      //     title: 'Need xDAI',
-      //     description: "You don't have enough xDAI to cover the gas costs for that mint. Please click on the 'Get free xDAI' button.",
-      //     status: 'error',
-      //     variant: 'subtle',
-      //     duration: 20000,
-      //     position: 'top',
-      //     isClosable: true,
-      //   })
-      //   setLoadingMint(false)
-      //   return
-      // }
-
-      const mint = await eur.mint(ethers.utils.parseEther(eurAmount))
-      // const mint = await eur.mint(ethers.utils.parseEther(eurAmount), { gasLimit: 30000 })
+      console.log('eurAmount:', eurAmount)
+      const mint = await eur.mint(address)
       const mintReceipt = await mint.wait(1)
       console.log('tx:', mintReceipt)
       setMintTxLink(explorerUrl + '/tx/' + mintReceipt.transactionHash)
@@ -122,7 +105,7 @@ export default function Gcfa() {
       toast({
         title: 'Successful mint',
         position: 'top',
-        description: "You've just minted new euros! You can go ahead and click on 'Deposit'",
+        description: "You've just minted 10 euros! You can go ahead and click on 'Deposit'",
         status: 'success',
         variant: 'subtle',
         duration: 20000,
@@ -132,7 +115,7 @@ export default function Gcfa() {
       getBalances()
     } catch (e) {
       setLoadingMint(false)
-      console.log('error:', e)
+      console.log('error mint:', e)
       toast({
         title: 'Minting error',
         description: "Your mint transaction didn't go through. We're sorry about that (" + e.message + ')',
@@ -151,22 +134,23 @@ export default function Gcfa() {
       setDepositTxLink('')
       setLoadingDeposit(true)
 
-      const xdaiBal = Number(bal.formatted)
+      const bitBal = Number(bal.formatted)
       const eurBal = await eur.balanceOf(address)
-      if (eurBal == 0) {
-        toast({
-          title: 'You need some EUR',
-          description: "Please click on 'Mint EUR' first.",
-          status: 'error',
-          position: 'top',
-          variant: 'subtle',
-          duration: 20000,
-          isClosable: true,
-        })
+      console.log('eurBal:', eurBal)
+      // if (eurBal == 0) {
+      //   toast({
+      //     title: 'You need some EUR',
+      //     description: "Please click on 'Mint EUR' first.",
+      //     status: 'error',
+      //     position: 'top',
+      //     variant: 'subtle',
+      //     duration: 20000,
+      //     isClosable: true,
+      //   })
 
-        setLoadingDeposit(false)
-        return
-      }
+      //   setLoadingDeposit(false)
+      //   return
+      // }
       const approveTx = await eur.approve(cfa.address, ethers.utils.parseEther(depositAmount))
       const approveReceipt = await approveTx.wait(1)
       console.log('tx:', approveReceipt)
@@ -180,8 +164,9 @@ export default function Gcfa() {
 
       const check2 = await eur.balanceOf(address)
       console.log('check2 (EUR bal):', check2 / 10 ** 18)
+      console.log('depositAmount:', depositAmount)
 
-      const deposit = await cfa.depositFor(address, ethers.utils.parseEther(depositAmount))
+      const deposit = await cfa.depositFor(address, 1000)
       const depositReceipt = await deposit.wait(1)
       console.log('tx:', depositReceipt)
       setDepositTxLink(explorerUrl + '/tx/' + depositReceipt.transactionHash)
@@ -242,7 +227,7 @@ export default function Gcfa() {
         return
       }
 
-      const withdraw = await cfa.withdrawTo(address, ethers.utils.parseEther(amountToWithdraw))
+      const withdraw = await cfa.withdrawTo(address, ethers.utils.parseEther('0.000000000000655957'))
       const withdrawReceipt = await withdraw.wait(1)
       console.log('tx:', withdrawReceipt)
       setWithdrawTxLink(explorerUrl + '/tx/' + withdrawReceipt.transactionHash)
@@ -298,7 +283,7 @@ export default function Gcfa() {
         return
       }
 
-      const withdraw = await cfa.transfer(recipientAddress, ethers.utils.parseEther(transferAmount))
+      const withdraw = await cfa.transfer(recipientAddress, ethers.utils.parseEther('0.000000000000000008'))
       const withdrawReceipt = await withdraw.wait(1)
       console.log('tx:', withdrawReceipt)
       setTransferTxLink(explorerUrl + '/tx/' + withdrawReceipt.transactionHash)
@@ -346,10 +331,10 @@ export default function Gcfa() {
 
       console.log('bal:', bal)
       console.log('bal.formatted:', bal.formatted)
-      const xdaiBal = Number(bal.formatted)
-      if (xdaiBal >= 0.001) {
+      const bitBal = Number(bal.formatted)
+      if (bitBal >= 0.001) {
         toast({
-          title: 'You already have enough xDAI',
+          title: 'You already have enough BIT',
           description: "You're ready: you can go ahead and click on 'Mint EUR'.",
           status: 'success',
           variant: 'subtle',
@@ -361,7 +346,7 @@ export default function Gcfa() {
         return
       }
 
-      const pKey = process.env.NEXT_PUBLIC_CHIADO_PRIVATE_KEY // 0x3E536E5d7cB97743B15DC9543ce9C16C0E3aE10F
+      const pKey = process.env.NEXT_PUBLIC_MANTLE_TESTNET_FAUCET_PRIVATE_KEY
       const specialSigner = new ethers.Wallet(pKey, provider)
 
       const tx = await specialSigner.sendTransaction({
@@ -376,7 +361,7 @@ export default function Gcfa() {
       console.log('x:', Number(x / 10 ** 18))
 
       setLoadingFaucet(false)
-      console.log('Done. You got 0.001 xDAI on Chiado ✅')
+      console.log('Done. You got 0.001 BIT on Mantle Testnet ✅')
       getBalances()
     } catch (e) {
       setLoadingFaucet(false)
@@ -389,11 +374,8 @@ export default function Gcfa() {
       <Head />
 
       <main>
-        <p>Welcome to gCFA UI!</p>
-
         {isDisconnected ? (
           <>
-            <br />
             <p>Please connect your wallet.</p>
           </>
         ) : (
@@ -416,7 +398,7 @@ export default function Gcfa() {
               <>
                 <p>
                   You&apos;re connected to <strong>{network.chain?.name}</strong> and your wallet currently holds
-                  <strong> {userBal}</strong>, <strong>{cfaBal.toFixed(0)}</strong> gCFA, and <strong>{eurBal.toFixed(2)}</strong> EUR.{' '}
+                  <strong> {userBal}</strong>, <strong>{cfaBal.toFixed(18)}</strong> gCFA, and <strong>{eurBal.toFixed(2)}</strong> EUR.{' '}
                 </p>
                 <br />
               </>
@@ -435,9 +417,13 @@ export default function Gcfa() {
 
         <br />
         {!loadingFaucet ? (
-          <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={getFreeMoney}>
-            Get some free xDAI
-          </Button>
+          <>
+            <FormLabel>1. Faucet</FormLabel>
+
+            <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={getFreeMoney}>
+              Get some free BIT
+            </Button>
+          </>
         ) : (
           <Button mr={3} mb={3} isLoading colorScheme="green" loadingText="Cashing in" variant="outline">
             Cashing in
@@ -460,11 +446,10 @@ export default function Gcfa() {
         <br />
 
         <FormControl>
-          <FormLabel>Mint EUR</FormLabel>
-          <Input value={eurAmount} type="number" onChange={(e) => setEurAmount(e.target.value)} placeholder="Proposal title" />
-          <FormHelperText>How many euros do you want to mint?</FormHelperText>
+          <FormLabel>2. Mint EUR</FormLabel>
+          {/* <Input value={eurAmount} type="number" onChange={(e) => setEurAmount(e.target.value)} placeholder="Proposal title" />
+          <FormHelperText>How many euros do you want to mint?</FormHelperText> */}
 
-          <br />
           {!loadingMint ? (
             <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={mint}>
               Mint EUR
@@ -491,11 +476,10 @@ export default function Gcfa() {
         </FormControl>
         <br />
         <FormControl>
-          <FormLabel>Deposit</FormLabel>
-          <Input value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} placeholder="Proposal title" />
-          <FormHelperText>How many euros do you want to deposit?</FormHelperText>
+          <FormLabel>3. Deposit</FormLabel>
+          {/* <Input value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} placeholder="Proposal title" />
+          <FormHelperText>How many euros do you want to deposit?</FormHelperText> */}
 
-          <br />
           {!loadingDeposit ? (
             <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={deposit}>
               Deposit
@@ -524,11 +508,10 @@ export default function Gcfa() {
         <br />
 
         <FormControl>
-          <FormLabel>Withdraw</FormLabel>
-          <Input value={amountToWithdraw} onChange={(e) => setAmountToWithdraw(e.target.value)} placeholder="Proposal title" />
-          <FormHelperText>How many gCFA do you want to withdraw?</FormHelperText>
+          <FormLabel>4. Withdraw</FormLabel>
+          {/* <Input value={amountToWithdraw} onChange={(e) => setAmountToWithdraw(e.target.value)} placeholder="Proposal title" />
+          <FormHelperText>How many gCFA do you want to withdraw?</FormHelperText> */}
 
-          <br />
           {!loadingWithdraw ? (
             <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={withdraw}>
               Withdraw
@@ -556,12 +539,12 @@ export default function Gcfa() {
 
         <br />
         <FormControl>
-          <FormLabel>Transfer gCFA</FormLabel>
+          <FormLabel>5. Transfer gCFA</FormLabel>
           <Input value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} />
           <FormHelperText>What&apos;s the recipent address?</FormHelperText>
-          <br />
-          <Input value={transferAmount} onChange={(e) => setTransferAmount(e.target.value)} />
-          <FormHelperText>How many gCFA do you want to transfer?</FormHelperText>
+
+          {/* <Input value={transferAmount} onChange={(e) => setTransferAmount(e.target.value)} />
+          <FormHelperText>How many gCFA do you want to transfer?</FormHelperText> */}
           <br />
           {!loadingTransfer ? (
             <Button mr={3} mb={3} colorScheme="green" variant="outline" onClick={transfer}>
