@@ -1,4 +1,4 @@
-export const NFT_CONTRACT_ADDRESS = '0x094386E5AF79d4e9929046e000900Aca257F6617'
+export const NFT_CONTRACT_ADDRESS = '0xCC0C150605f20ce2F0Ade5333cD46eE69A198bb2'
 export const NFT_CONTRACT_ABI = <const>[
   {
     inputs: [
@@ -153,6 +153,29 @@ export const NFT_CONTRACT_ABI = <const>[
     ],
     name: 'Transfer',
     type: 'event',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_number',
+        type: 'uint256',
+      },
+      {
+        internalType: 'string',
+        name: '_uri',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: '_uriRedeemed',
+        type: 'string',
+      },
+    ],
+    name: '_mintBatch',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
     inputs: [

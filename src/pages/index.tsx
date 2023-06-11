@@ -1,4 +1,4 @@
-import { Heading, Button, useToast } from '@chakra-ui/react'
+import { Heading, Button, useToast, Text } from '@chakra-ui/react'
 import { Head } from '../components/layout/Head'
 // import Image from 'next/image'
 import { LinkComponent } from '../components/layout/LinkComponent'
@@ -8,16 +8,21 @@ import { ethers } from 'ethers'
 import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from '../lib/consts'
 import useSound from 'use-sound' // https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/
 const stevie = 'https://bafybeicxvrehw23nzkwjcxvsytimqj2wos7dhh4evrv5kscbbj6agilcsy.ipfs.w3s.link/another-star.mp3'
+import { GCFA_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI } from '../lib/consts'
 
 export default function Index() {
+  const { data: signer } = useSigner()
+
+  const cfa = new ethers.Contract(GCFA_CONTRACT_ADDRESS, GCFA_CONTRACT_ABI, signer)
+
   const [loading, setLoading] = useState<boolean>(false)
   const [userBal, setUserBal] = useState<string>('')
   const [txLink, setTxLink] = useState<string>('')
+  const [cfaBal, setCfaBal] = useState<number>(0)
 
   const { data } = useFeeData()
   const { address, isConnecting, isDisconnected } = useAccount()
 
-  const { data: signer } = useSigner()
   const {
     data: bal,
     isError,
@@ -37,9 +42,20 @@ export default function Index() {
 
   const nft = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI, signer)
 
+  const getBalances = async () => {
+    const y = await cfa.balanceOf(address)
+    setCfaBal(Number(y / 10 ** 18))
+    console.log('cfa bal:', Number(y / 10 ** 18))
+    return Number(y / 10 ** 18)
+  }
+
   useEffect(() => {
     const val = Number(bal?.formatted).toFixed(3)
     setUserBal(String(val) + ' ' + bal?.symbol)
+    // if (address !== null) {
+    //   getBalances()
+    //   console.log('cfaBal:', cfaBal)
+    // }
   }, [bal?.formatted, bal?.symbol, address])
 
   const checkFees = () => {
@@ -49,6 +65,7 @@ export default function Index() {
 
   const mint = async () => {
     console.log('minting...')
+    const gcfaBalance = await getBalances()
     if (isDisconnected === true) {
       toast({
         title: 'Not connected',
@@ -58,12 +75,50 @@ export default function Index() {
         isClosable: true,
       })
     } else {
+      console.log('cfaBal:', gcfaBalance)
+      if (gcfaBalance === 0) {
+        toast({
+          title: 'Insufficient gCFA balance',
+          description: 'Please get som gCFA first.',
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        })
+        setLoading(false)
+        return
+      }
       try {
         setLoading(true)
-        const call = await nft.safeMint()
+        const uri1 = 'https://ipfs.io/ipfs/bafybeieqdjf6acdw2hwymztudsp2lbyqzngyhfznu2fsktgwqvyzmp5mui/metadata.json'
+        const uri2 = 'https://ipfs.io/ipfs/bafybeieqdjf6acdw2hwymztudsp2lbyqzngyhfznu2fsktgwqvyzmp5mui/metadata.json'
+
+        const call = await nft._mintBatch(1, uri1, uri2)
         const nftReceipt = await call.wait(1)
         console.log('tx:', nftReceipt)
-        setTxLink(explorerUrl + '/tx/' + nftReceipt.transactionHash)
+
+        // const approval = await btcContract.connect(issuer).approve(minifolio.address, btcAmount);
+        // await approval.wait(1);
+        // const transferBTC = await btcContract.transfer(minifolio.address, btcAmount);
+        // await transferBTC.wait(1);
+        // expect(await btcContract.balanceOf(minifolio.address)).to.equal(btcAmount);
+
+        const approve = await cfa.approve(nft.address, ethers.utils.parseEther('50000'))
+        const approveReceipt = await approve.wait(1)
+        console.log('approveReceipt:', approveReceipt)
+
+        const cfaTransfer = await cfa.transfer(nft.address, ethers.utils.parseEther('50000'))
+        const transferReceipt = await cfaTransfer.wait(2)
+        console.log('transferReceipt:', transferReceipt)
+        toast({
+          title: 'Successful mint',
+          description: 'Congrats! You just minted a Matryoshka NFT: it is loaded with 50k gCFA. 🎉',
+          status: 'success',
+          position: 'top',
+          variant: 'subtle',
+          duration: 20000,
+          isClosable: true,
+        })
+        setTxLink(explorerUrl + '/tx/' + transferReceipt.transactionHash)
         setLoading(false)
         play()
       } catch (e) {
@@ -88,11 +143,14 @@ export default function Index() {
           <>
             <br />
 
-            <p>You&apos;re about to mint 1 NFT on Ethereum Goerli Testnet.</p>
+            <p>
+              You&apos;re about to mint 1 Matryoshka NFT on <strong>Mantle Testnet</strong>. It will hold <strong>50k gCFA</strong>.
+            </p>
             <br />
             <p>
-              You&apos;re connected to <strong>Mantle Testnet</strong> and your wallet currently holds
-              <strong> {userBal}</strong>.
+              Your wallet currently holds
+              <strong> {userBal}</strong> {cfaBal !== 0 ? 'and ' + cfaBal + ' gCFA!' : ''}
+              {/* <strong> {userBal}</strong> */}
             </p>
             {/* You can go ahead and click on the &apos;Mint&apos; button below: you will be invited to sign your
               transaction.{' '} */}
@@ -104,6 +162,17 @@ export default function Index() {
             Get some gCFA
           </Button>
         </LinkComponent>{' '}
+        <br />
+        <br />
+        {!loading ? (
+          <Button colorScheme="blue" variant="outline" onClick={mint}>
+            Mint your 50k Matryoshka NFT
+          </Button>
+        ) : (
+          <Button isLoading colorScheme="blue" loadingText="Minting" variant="outline">
+            Minting
+          </Button>
+        )}
         {/* {!loading ? (
           !txLink ? (
             <Button colorScheme="green" variant="outline" onClick={mint}>
@@ -123,18 +192,31 @@ export default function Index() {
           <>
             <br />
             <br />
+
             <p>Done! You can view your transaction on Etherscan:</p>
             <br />
+            <Text fontSize="20px" color="#45a2f8">
+              <LinkComponent target="blank" href={txLink}>
+                <strong>{txLink}</strong>
+              </LinkComponent>
+            </Text>
           </>
         )}
         <br />
-        <br />
         {txLink && (
-          <Button colorScheme="red" variant="outline" onClick={() => stop()}>
-            Stop the music
-          </Button>
+          <>
+            <Button size="sm" colorScheme="red" variant="outline" onClick={() => stop()}>
+              Stop the music
+            </Button>
+            <br />
+            <br />
+            <LinkComponent target="blank" href="redeem">
+              <Button colorScheme="purple" variant="outline">
+                Go test the redeem function
+              </Button>
+            </LinkComponent>
+          </>
         )}
-        {/* <Image height="800" width="800" alt="contract-image" src="/thistle-contract-feb-15-2023.png" /> */}
       </main>
     </>
   )
