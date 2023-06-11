@@ -1,21 +1,41 @@
-export const NFT_CONTRACT_ADDRESS = '0x751a7FC7e15Af99A31c02d9d82AdE2e3ab5294BC'
+export const NFT_CONTRACT_ADDRESS = '0x094386E5AF79d4e9929046e000900Aca257F6617'
 export const NFT_CONTRACT_ABI = <const>[
   {
     inputs: [
       {
-        internalType: 'contract IERC20',
-        name: 'wrappedToken',
-        type: 'address',
+        internalType: 'string',
+        name: '_name',
+        type: 'string',
       },
       {
-        internalType: 'address',
-        name: 'recoveryAddress',
-        type: 'address',
+        internalType: 'string',
+        name: '_symbol',
+        type: 'string',
       },
       {
         internalType: 'uint256',
-        name: 'rate',
+        name: '_mintNumber',
         type: 'uint256',
+      },
+      {
+        internalType: 'string',
+        name: '_uri',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: '_uriRedeemed',
+        type: 'string',
+      },
+      {
+        internalType: 'uint256',
+        name: '_royalties',
+        type: 'uint256',
+      },
+      {
+        internalType: 'address',
+        name: '_btcAddress',
+        type: 'address',
       },
     ],
     stateMutability: 'nonpayable',
@@ -33,17 +53,80 @@ export const NFT_CONTRACT_ABI = <const>[
       {
         indexed: true,
         internalType: 'address',
-        name: 'spender',
+        name: 'approved',
         type: 'address',
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: 'uint256',
-        name: 'value',
+        name: 'tokenId',
         type: 'uint256',
       },
     ],
     name: 'Approval',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'operator',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'bool',
+        name: 'approved',
+        type: 'bool',
+      },
+    ],
+    name: 'ApprovalForAll',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'previousOwner',
+        type: 'address',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
+    ],
+    name: 'OwnershipTransferred',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'from',
+        type: 'address',
+      },
+      {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'Redeem',
     type: 'event',
   },
   {
@@ -62,9 +145,9 @@ export const NFT_CONTRACT_ABI = <const>[
         type: 'address',
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: 'uint256',
-        name: 'value',
+        name: 'tokenId',
         type: 'uint256',
       },
     ],
@@ -75,47 +158,17 @@ export const NFT_CONTRACT_ABI = <const>[
     inputs: [
       {
         internalType: 'address',
-        name: 'owner',
-        type: 'address',
-      },
-      {
-        internalType: 'address',
-        name: 'spender',
-        type: 'address',
-      },
-    ],
-    name: 'allowance',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'spender',
+        name: 'to',
         type: 'address',
       },
       {
         internalType: 'uint256',
-        name: 'amount',
+        name: 'tokenId',
         type: 'uint256',
       },
     ],
     name: 'approve',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
+    outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
@@ -123,7 +176,7 @@ export const NFT_CONTRACT_ABI = <const>[
     inputs: [
       {
         internalType: 'address',
-        name: 'account',
+        name: 'owner',
         type: 'address',
       },
     ],
@@ -140,12 +193,44 @@ export const NFT_CONTRACT_ABI = <const>[
   },
   {
     inputs: [],
-    name: 'decimals',
+    name: 'btcAddress',
     outputs: [
       {
-        internalType: 'uint8',
+        internalType: 'address',
         name: '',
-        type: 'uint8',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'burn',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'getApproved',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
       },
     ],
     stateMutability: 'view',
@@ -155,16 +240,16 @@ export const NFT_CONTRACT_ABI = <const>[
     inputs: [
       {
         internalType: 'address',
-        name: 'spender',
+        name: 'owner',
         type: 'address',
       },
       {
-        internalType: 'uint256',
-        name: 'subtractedValue',
-        type: 'uint256',
+        internalType: 'address',
+        name: 'operator',
+        type: 'address',
       },
     ],
-    name: 'decreaseAllowance',
+    name: 'isApprovedForAll',
     outputs: [
       {
         internalType: 'bool',
@@ -172,47 +257,18 @@ export const NFT_CONTRACT_ABI = <const>[
         type: 'bool',
       },
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [
       {
-        internalType: 'address',
-        name: 'account',
-        type: 'address',
-      },
-      {
-        internalType: 'uint16',
-        name: 'amountEUR',
-        type: 'uint16',
-      },
-    ],
-    name: 'depositFor',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'spender',
-        type: 'address',
-      },
-      {
         internalType: 'uint256',
-        name: 'addedValue',
+        name: 'tokenId',
         type: 'uint256',
       },
     ],
-    name: 'increaseAllowance',
+    name: 'isRedeemable',
     outputs: [
       {
         internalType: 'bool',
@@ -220,7 +276,7 @@ export const NFT_CONTRACT_ABI = <const>[
         type: 'bool',
       },
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -238,46 +294,7 @@ export const NFT_CONTRACT_ABI = <const>[
   },
   {
     inputs: [],
-    name: 'rate',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'recoverCFA',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'recoverEUR',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'recoveryAddress',
+    name: 'owner',
     outputs: [
       {
         internalType: 'address',
@@ -289,8 +306,183 @@ export const NFT_CONTRACT_ABI = <const>[
     type: 'function',
   },
   {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'ownerOf',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'redeem',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'value',
+        type: 'uint256',
+      },
+    ],
+    name: 'royaltyInfo',
+    outputs: [
+      {
+        internalType: 'address',
+        name: 'receiver',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'royaltyAmount',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'from',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: 'to',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'safeTransferFrom',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'from',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: 'to',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'bytes',
+        name: 'data',
+        type: 'bytes',
+      },
+    ],
+    name: 'safeTransferFrom',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'operator',
+        type: 'address',
+      },
+      {
+        internalType: 'bool',
+        name: 'approved',
+        type: 'bool',
+      },
+    ],
+    name: 'setApprovalForAll',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes4',
+        name: 'interfaceId',
+        type: 'bytes4',
+      },
+    ],
+    name: 'supportsInterface',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [],
     name: 'symbol',
+    outputs: [
+      {
+        internalType: 'string',
+        name: '',
+        type: 'string',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'tokenURI',
     outputs: [
       {
         internalType: 'string',
@@ -318,30 +510,6 @@ export const NFT_CONTRACT_ABI = <const>[
     inputs: [
       {
         internalType: 'address',
-        name: 'to',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'amount',
-        type: 'uint256',
-      },
-    ],
-    name: 'transfer',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
         name: 'from',
         type: 'address',
       },
@@ -352,61 +520,35 @@ export const NFT_CONTRACT_ABI = <const>[
       },
       {
         internalType: 'uint256',
-        name: 'amount',
+        name: 'tokenId',
         type: 'uint256',
       },
     ],
     name: 'transferFrom',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
+    outputs: [],
     stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'underlying',
-    outputs: [
-      {
-        internalType: 'contract IERC20',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [
       {
         internalType: 'address',
-        name: 'account',
+        name: 'newOwner',
         type: 'address',
       },
-      {
-        internalType: 'uint32',
-        name: 'amountCFA',
-        type: 'uint32',
-      },
     ],
-    name: 'withdrawTo',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
+    name: 'transferOwnership',
+    outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
+  {
+    stateMutability: 'payable',
+    type: 'receive',
+  },
 ]
 
-export const GCFA_CONTRACT_ADDRESS = '0xC947c85a78f94a5EC4D32827e788F08b135ac003'
+export const GCFA_CONTRACT_ADDRESS = '0x0965410A9e0052BC49261Ca39307E502d7cD7e6A'
 export const GCFA_CONTRACT_ABI = [
   {
     inputs: [
@@ -591,9 +733,9 @@ export const GCFA_CONTRACT_ABI = [
         type: 'address',
       },
       {
-        internalType: 'uint16',
+        internalType: 'uint256',
         name: 'amountEUR',
-        type: 'uint16',
+        type: 'uint256',
       },
     ],
     name: 'depositFor',
@@ -629,6 +771,32 @@ export const GCFA_CONTRACT_ABI = [
       },
     ],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'maxCFA',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'maxEUR',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -796,9 +964,9 @@ export const GCFA_CONTRACT_ABI = [
         type: 'address',
       },
       {
-        internalType: 'uint32',
+        internalType: 'uint256',
         name: 'amountCFA',
-        type: 'uint32',
+        type: 'uint256',
       },
     ],
     name: 'withdrawTo',
@@ -813,7 +981,7 @@ export const GCFA_CONTRACT_ABI = [
     type: 'function',
   },
 ]
-export const EURM_CONTRACT_ADDRESS = '0xB0D0E66f43922396fd010E636E935731065aec84'
+export const EURM_CONTRACT_ADDRESS = '0x0cF22fEb54DCdB343d085f8CCA74F4a71C2CFc4f'
 
 export const EURM_CONTRACT_ABI = [
   {
@@ -948,7 +1116,7 @@ export const EURM_CONTRACT_ABI = [
         type: 'uint8',
       },
     ],
-    stateMutability: 'view',
+    stateMutability: 'pure',
     type: 'function',
   },
   {
@@ -1000,13 +1168,7 @@ export const EURM_CONTRACT_ABI = [
     type: 'function',
   },
   {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'to',
-        type: 'address',
-      },
-    ],
+    inputs: [],
     name: 'mint',
     outputs: [],
     stateMutability: 'nonpayable',
