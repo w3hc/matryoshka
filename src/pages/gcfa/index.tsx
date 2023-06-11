@@ -29,7 +29,7 @@ export default function Gcfa() {
   const [cfaBal, setCfaBal] = useState<number>(0)
   const [eurBal, setEurBal] = useState<number>(0)
   const [eurAmount, setEurAmount] = useState<string>('1')
-  const [depositAmount, setDepositAmount] = useState<string>('1')
+  const [depositAmount, setDepositAmount] = useState<string>('100')
   const [amountToWithdraw, setAmountToWithdraw] = useState<string>('1000')
   const [recipientAddress, setRecipientAddress] = useState<string>(address)
   const [transferAmount, setTransferAmount] = useState<string>('500')
@@ -96,7 +96,7 @@ export default function Gcfa() {
       setLoadingMint(true)
       setMintTxLink('')
       console.log('eurAmount:', eurAmount)
-      const mint = await eur.mint(address)
+      const mint = await eur.mint()
       const mintReceipt = await mint.wait(1)
       console.log('tx:', mintReceipt)
       setMintTxLink(explorerUrl + '/tx/' + mintReceipt.transactionHash)
@@ -134,9 +134,9 @@ export default function Gcfa() {
       setDepositTxLink('')
       setLoadingDeposit(true)
 
-      const bitBal = Number(bal.formatted)
-      const eurBal = await eur.balanceOf(address)
-      console.log('eurBal:', eurBal)
+      // const bitBal = Number(bal.formatted)
+      // const eurBal = await eur.balanceOf(address)
+      // console.log('eurBal:', eurBal)
       // if (eurBal == 0) {
       //   toast({
       //     title: 'You need some EUR',
@@ -151,7 +151,7 @@ export default function Gcfa() {
       //   setLoadingDeposit(false)
       //   return
       // }
-      const approveTx = await eur.approve(cfa.address, ethers.utils.parseEther(depositAmount))
+      const approveTx = await eur.approve(cfa.address, ethers.utils.parseEther('100'))
       const approveReceipt = await approveTx.wait(1)
       console.log('tx:', approveReceipt)
 
@@ -166,7 +166,7 @@ export default function Gcfa() {
       console.log('check2 (EUR bal):', check2 / 10 ** 18)
       console.log('depositAmount:', depositAmount)
 
-      const deposit = await cfa.depositFor(address, 1000)
+      const deposit = await cfa.depositFor(address, ethers.utils.parseEther('100'))
       const depositReceipt = await deposit.wait(1)
       console.log('tx:', depositReceipt)
       setDepositTxLink(explorerUrl + '/tx/' + depositReceipt.transactionHash)
@@ -446,7 +446,7 @@ export default function Gcfa() {
         <br />
 
         <FormControl>
-          <FormLabel>2. Mint EUR</FormLabel>
+          <FormLabel>2. Mint 100 EUR</FormLabel>
           {/* <Input value={eurAmount} type="number" onChange={(e) => setEurAmount(e.target.value)} placeholder="Proposal title" />
           <FormHelperText>How many euros do you want to mint?</FormHelperText> */}
 
@@ -476,7 +476,7 @@ export default function Gcfa() {
         </FormControl>
         <br />
         <FormControl>
-          <FormLabel>3. Deposit</FormLabel>
+          <FormLabel>3. Deposit 100 EUR</FormLabel>
           {/* <Input value={depositAmount} onChange={(e) => setDepositAmount(e.target.value)} placeholder="Proposal title" />
           <FormHelperText>How many euros do you want to deposit?</FormHelperText> */}
 
@@ -497,6 +497,12 @@ export default function Gcfa() {
                   View your deposit tx on Etherscan: <strong>{depositTxLink}</strong>
                 </LinkComponent>
               </Text>
+              <br />
+              <LinkComponent href="/">
+                <Button colorScheme="blue" variant="outline">
+                  Go mint your Matryoshka NFT!
+                </Button>
+              </LinkComponent>{' '}
             </>
           ) : (
             <>
