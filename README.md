@@ -4,7 +4,8 @@ This project was developed during Mantle/Encode Hackathon in June 2023.
 
 "Matryoshka" means "russian doll" in russian. We used [Minifolio](https://github.com/ATO-nft/minifolio), which is an implementation of the [ERC-5560](https://eips.ethereum.org/EIPS/eip-5560) (aka redeemable NFTs) to store some value in an NFT. Minifolio allows you to store ETH, ERC-20 tokens, or another NFT. In our case, we store an ERC-20 called [gCFA](https://github.com/w3hc/gcfa-contracts): a crypto version of the CFA franc (a currency used in 16 countries in Africa). The CFA and gCFA is fully pegged to the euro. We also have deployed a DAO ([Gov](https://github.com/w3hc/gov)) to Mantle Testnet as a recovery address (required by gCFA).
 
-Live demo: [https://matryoshka.on.fleek.co/](https://matryoshka.on.fleek.co/)
+- Live demo: [https://matryoshka.on.fleek.co/](https://matryoshka.on.fleek.co/)
+- YouTube video:
 
 ## Contract addresses:
 
@@ -24,6 +25,10 @@ npm i
 ```sh
 npm run dev
 ```
+
+## Contribute
+
+- Task board: https://github.com/orgs/w3hc/projects/8/views/6
 
 ## Support
 
